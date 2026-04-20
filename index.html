@@ -3,176 +3,275 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>퇴직연금 급여계산기</title>
+    <title>실속형 퇴직연금 급여계산기</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Pretendard', sans-serif; background-color: #f3f4f6; }
+        body { font-family: 'Pretendard', sans-serif; background-color: #f8f9fa; }
+        .glass-panel { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
     </style>
 </head>
-<body class="p-6 md:p-12">
+<body class="p-4 md:p-8">
 
-    <div class="max-w-5xl mx-auto">
-        <div class="mb-8">
-            <h1 class="text-3xl font-bold text-gray-900 mb-2">퇴직연금 급여계산기</h1>
-            <p class="text-gray-500">개인별과세소득액내역을 바탕으로 임금총액 및 퇴직급여를 산출합니다.</p>
+    <div class="max-w-6xl mx-auto">
+        <div class="mb-8 border-b pb-4">
+            <h1 class="text-3xl font-bold text-gray-900 mb-2 tracking-tight">퇴직연금 급여계산기</h1>
+            <p class="text-gray-500 text-sm">개인별과세소득액내역서의 핵심 금액만 입력하여 빠르고 정확하게 산출하세요.</p>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
-                <h2 class="text-xl font-bold text-gray-800 mb-6 flex items-center">
-                    <span class="w-8 h-8 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center mr-3 text-sm">1</span>
-                    데이터 입력 및 설정
-                </h2>
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
 
-                <div class="mb-8 p-4 bg-gray-50 border border-dashed border-gray-300 rounded-xl text-center">
-                    <p class="text-sm text-gray-500 mb-2">📄 개인별과세소득액내역 이미지 로드 완료</p>
-                    <p class="text-xs text-blue-600 font-medium">데이터 추출 성공: 총 13개월 내역 인식됨</p>
-                </div>
+            <div class="lg:col-span-7 space-y-6">
 
-                <div class="mb-8">
-                    <h3 class="text-sm font-bold text-gray-700 mb-3">근무일수 설정 (일할 계산용)</h3>
+                <div class="glass-panel rounded-2xl shadow-sm border border-gray-200 p-6">
+                    <h2 class="text-lg font-bold text-gray-800 mb-4 flex items-center">
+                        <span class="w-6 h-6 rounded bg-blue-100 text-blue-600 flex items-center justify-center mr-2 text-xs">1</span>
+                        기본 정보 및 기산일
+                    </h2>
+                    <div class="grid grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-600 mb-1">성명</label>
+                            <input type="text" id="empName" value="곽소현" oninput="calculate()" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-600 mb-1">교번</label>
+                            <input type="text" id="empId" value="210817" oninput="calculate()" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                        </div>
+                    </div>
                     <div class="grid grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-xs text-gray-500 mb-1">첫 달 (23년 12월)</label>
-                            <div class="relative">
-                                <input type="number" id="firstMonthDays" value="18" max="31" min="0" oninput="calculate()"
-                                    class="w-full border border-gray-300 rounded-lg px-4 py-2 text-gray-700 focus:ring-2 focus:ring-blue-500 focus:outline-none text-right">
-                                <span class="absolute right-10 top-2.5 text-gray-400 text-sm">일</span>
-                            </div>
+                            <label class="block text-xs font-semibold text-gray-600 mb-1">입사일 (기산 시작)</label>
+                            <input type="date" id="startDate" value="2023-12-14" onchange="calculate()" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
                         </div>
                         <div>
-                            <label class="block text-xs text-gray-500 mb-1">마지막 달 (24년 12월)</label>
+                            <label class="block text-xs font-semibold text-gray-600 mb-1">퇴직일 (기산 종료)</label>
+                            <input type="date" id="endDate" value="2024-12-13" onchange="calculate()" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-panel rounded-2xl shadow-sm border border-gray-200 p-6">
+                    <h2 class="text-lg font-bold text-gray-800 mb-2 flex items-center">
+                        <span class="w-6 h-6 rounded bg-blue-100 text-blue-600 flex items-center justify-center mr-2 text-xs">2</span>
+                        급여지급액 직접 입력
+                    </h2>
+                    <p class="text-xs text-gray-500 mb-5">명세서에 표기된 1년치 기본급여 총계와, 일할 계산이 필요한 첫 달/마지막 달의 금액을 입력해 주세요.</p>
+
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-bold text-gray-800 mb-1">1년치 급여지급액 총합계 <span class="text-xs font-normal text-gray-400 ml-1">(과세별도 수당 제외)</span></label>
                             <div class="relative">
-                                <input type="number" id="lastMonthDays" value="13" max="31" min="0" oninput="calculate()"
-                                    class="w-full border border-gray-300 rounded-lg px-4 py-2 text-gray-700 focus:ring-2 focus:ring-blue-500 focus:outline-none text-right">
-                                <span class="absolute right-10 top-2.5 text-gray-400 text-sm">일</span>
+                                <input type="text" id="totalBase" value="55,581,950" oninput="formatNumber(this); calculate()" class="w-full border border-gray-300 rounded-lg px-4 py-3 text-lg font-bold text-right focus:ring-2 focus:ring-blue-500 focus:outline-none pr-8">
+                                <span class="absolute right-3 top-3.5 text-gray-500">원</span>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4 pt-2">
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-600 mb-1">첫 달 급여지급액 <span class="text-gray-400">(안분 대상)</span></label>
+                                <div class="relative">
+                                    <input type="text" id="firstBase" value="3,396,660" oninput="formatNumber(this); calculate()" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-right focus:ring-2 focus:ring-blue-500 focus:outline-none pr-8">
+                                    <span class="absolute right-3 top-2.5 text-gray-500 text-sm">원</span>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-600 mb-1">마지막 달 급여지급액 <span class="text-gray-400">(안분 대상)</span></label>
+                                <div class="relative">
+                                    <input type="text" id="lastBase" value="4,210,540" oninput="formatNumber(this); calculate()" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-right focus:ring-2 focus:ring-blue-500 focus:outline-none pr-8">
+                                    <span class="absolute right-3 top-2.5 text-gray-500 text-sm">원</span>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div>
-                    <div class="flex justify-between items-end mb-3">
-                        <h3 class="text-sm font-bold text-gray-700">과세별도기지급액 (일회성 항목 제외)</h3>
-                        <span class="text-xs text-gray-400">체크 시 임금총액에서 차감</span>
+                <div class="glass-panel rounded-2xl shadow-sm border border-gray-200 p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-lg font-bold text-gray-800 flex items-center">
+                            <span class="w-6 h-6 rounded bg-blue-100 text-blue-600 flex items-center justify-center mr-2 text-xs">3</span>
+                            과세별도기지급액 관리
+                        </h2>
+                        <button onclick="addExtraPay()" class="text-xs bg-gray-100 text-gray-700 font-semibold px-3 py-1.5 rounded-lg hover:bg-gray-200 transition">+ 항목 추가</button>
                     </div>
-                    <div class="space-y-3 bg-gray-50 p-4 rounded-xl border border-gray-100">
-                        <label class="flex items-center justify-between cursor-pointer hover:bg-gray-100 p-2 rounded-md transition">
-                            <div class="flex items-center">
-                                <input type="checkbox" id="chk1" onchange="calculate()" class="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500">
-                                <span class="ml-3 text-sm text-gray-700">23년 12월 지급분</span>
-                            </div>
-                            <span class="text-sm font-medium text-gray-900">600,000원</span>
-                        </label>
-                        <label class="flex items-center justify-between cursor-pointer hover:bg-gray-100 p-2 rounded-md transition">
-                            <div class="flex items-center">
-                                <input type="checkbox" id="chk2" onchange="calculate()" class="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500">
-                                <span class="ml-3 text-sm text-gray-700">24년 03월 지급분</span>
-                            </div>
-                            <span class="text-sm font-medium text-gray-900">120,000원</span>
-                        </label>
-                        <label class="flex items-center justify-between cursor-pointer hover:bg-gray-100 p-2 rounded-md transition">
-                            <div class="flex items-center">
-                                <input type="checkbox" id="chk3" onchange="calculate()" class="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500">
-                                <span class="ml-3 text-sm text-gray-700">24년 11월 지급분</span>
-                            </div>
-                            <span class="text-sm font-medium text-gray-900">2,474,440원</span>
-                        </label>
-                        <label class="flex items-center justify-between cursor-pointer hover:bg-gray-100 p-2 rounded-md transition">
-                            <div class="flex items-center">
-                                <input type="checkbox" id="chk4" onchange="calculate()" class="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500">
-                                <span class="ml-3 text-sm text-gray-700">24년 12월 지급분</span>
-                            </div>
-                            <span class="text-sm font-medium text-gray-900">400,000원</span>
-                        </label>
+
+                    <div class="bg-gray-50 rounded-xl border border-gray-200 p-1">
+                        <div class="grid grid-cols-12 gap-2 px-4 py-2 border-b border-gray-200 text-xs font-semibold text-gray-500 text-center">
+                            <div class="col-span-4 text-left">수당명 / 메모</div>
+                            <div class="col-span-4 text-right">금액(원)</div>
+                            <div class="col-span-3">일회성 제외</div>
+                            <div class="col-span-1">삭제</div>
+                        </div>
+                        <div id="extraPayContainer" class="divide-y divide-gray-100">
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <div class="bg-gray-900 rounded-2xl shadow-xl p-8 text-white flex flex-col h-full relative overflow-hidden">
-                <div class="absolute -right-20 -top-20 w-64 h-64 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20"></div>
+            <div class="lg:col-span-5">
+                <div class="bg-gray-900 rounded-2xl shadow-xl p-6 md:p-8 text-white sticky top-6">
+                    <h2 class="text-lg font-bold text-gray-100 mb-6 flex items-center border-b border-gray-700 pb-4">
+                        <span class="w-6 h-6 rounded bg-blue-500 text-white flex items-center justify-center mr-2 text-xs">결과</span>
+                        최종 산출 내역
+                    </h2>
 
-                <h2 class="text-xl font-bold text-gray-100 mb-8 flex items-center relative z-10">
-                    <span class="w-8 h-8 rounded-lg bg-blue-900/50 text-blue-400 flex items-center justify-center mr-3 text-sm">2</span>
-                    최종 산출 결과
-                </h2>
+                    <div class="space-y-6 mb-8">
+                        <div class="flex justify-between items-center text-sm">
+                            <span class="text-gray-400">1. 성명</span>
+                            <span class="font-medium" id="resName">곽소현</span>
+                        </div>
+                        <div class="flex justify-between items-center text-sm">
+                            <span class="text-gray-400">2. 교번</span>
+                            <span class="font-medium" id="resId">210817</span>
+                        </div>
 
-                <div class="space-y-6 flex-1 relative z-10">
-                    <div class="flex justify-between items-center border-b border-gray-700 pb-4">
-                        <span class="text-gray-400">1. 성명</span>
-                        <span class="text-lg font-medium">곽소현</span>
+                        <div class="pt-4 border-t border-gray-800">
+                            <span class="text-gray-400 text-sm block mb-1">3. 산출된 임금총액 (A)</span>
+                            <div class="text-3xl font-bold text-blue-400 text-right" id="resTotalWage">0원</div>
+                        </div>
+
+                        <div class="pt-4 border-t border-gray-800">
+                            <span class="text-gray-400 text-sm block mb-1">4. 예상 퇴직급여 (A ÷ 12)</span>
+                            <div class="text-4xl font-black text-white text-right tracking-tight" id="resSeverance">0원</div>
+                        </div>
                     </div>
-                    <div class="flex justify-between items-center border-b border-gray-700 pb-4">
-                        <span class="text-gray-400">2. 교직원 번호 (교번)</span>
-                        <span class="text-lg font-medium">210817</span>
-                    </div>
 
-                    <div class="pt-4">
-                        <span class="text-gray-400 block mb-2">3. 산출된 임금총액 (A)</span>
-                        <div class="text-3xl font-bold text-blue-400 text-right" id="resultWage">0원</div>
+                    <div class="bg-gray-800 p-5 rounded-xl border border-gray-700">
+                        <h4 class="font-bold text-blue-300 text-sm mb-3">5. 계산 방법 설명</h4>
+                        <div class="text-gray-300 leading-relaxed text-xs space-y-2" id="resDescription">
+                        </div>
                     </div>
-
-                    <div class="pt-4 mb-8">
-                        <span class="text-gray-400 block mb-2">4. 예상 퇴직급여 (A ÷ 12)</span>
-                        <div class="text-4xl font-black text-white text-right" id="resultSeverance">0원</div>
-                    </div>
-                </div>
-
-                <div class="mt-auto bg-gray-800 p-5 rounded-xl border border-gray-700 relative z-10">
-                    <h4 class="text-sm font-bold text-gray-300 mb-2">5. 계산 방법 안내</h4>
-                    <p class="text-xs text-gray-400 leading-relaxed break-keep" id="resultDescription">
-                        </p>
                 </div>
             </div>
+
         </div>
     </div>
 
     <script>
-        // 초기 데이터 (이미지에서 추출된 고정값)
-        const DATA = {
-            baseFirstMonth: 3396660, // 23년 12월
-            baseLastMonth: 4210540,  // 24년 12월
-            baseMiddleSum: 47964750, // 24년 1월 ~ 11월 기본급여 합계
-            extraPay: [600000, 120000, 2474440, 400000] // 과세별도기지급액
-        };
+        // 과세별도기지급액 데이터 (초기값)
+        let extraPays = [
+            { id: 1, label: '23년 12월 지급분', amount: 600000, excluded: true },
+            { id: 2, label: '24년 03월 지급분', amount: 120000, excluded: true },
+            { id: 3, label: '24년 11월 지급분', amount: 2474440, excluded: true },
+            { id: 4, label: '24년 12월 지급분', amount: 400000, excluded: true }
+        ];
 
-        function calculate() {
-            // 1. 입력값 가져오기
-            const firstDays = parseInt(document.getElementById('firstMonthDays').value) || 0;
-            const lastDays = parseInt(document.getElementById('lastMonthDays').value) || 0;
-
-            // 2. 일할 계산 (안분)
-            const proratedFirst = (DATA.baseFirstMonth / 31) * firstDays;
-            const proratedLast = (DATA.baseLastMonth / 31) * lastDays;
-
-            // 3. 비일회성(포함할) 수당 합산
-            let includedExtraPay = 0;
-            let excludedCount = 0;
-            if(!document.getElementById('chk1').checked) includedExtraPay += DATA.extraPay[0]; else excludedCount++;
-            if(!document.getElementById('chk2').checked) includedExtraPay += DATA.extraPay[1]; else excludedCount++;
-            if(!document.getElementById('chk3').checked) includedExtraPay += DATA.extraPay[2]; else excludedCount++;
-            if(!document.getElementById('chk4').checked) includedExtraPay += DATA.extraPay[3]; else excludedCount++;
-
-            // 4. 최종 계산
-            const totalWage = proratedFirst + DATA.baseMiddleSum + proratedLast + includedExtraPay;
-            const severance = totalWage / 12;
-
-            // 5. 화면 렌더링
-            document.getElementById('resultWage').innerText = Math.round(totalWage).toLocaleString() + '원';
-            document.getElementById('resultSeverance').innerText = Math.round(severance).toLocaleString() + '원';
-
-            // 6. 설명 문구 동적 생성
-            const desc = `총 13개월의 데이터 중 온전한 중간 11개월분은 전액 반영되었으며,
-            첫 달은 31일 중 <b>${firstDays}일</b>, 마지막 달은 31일 중 <b>${lastDays}일</b>에 비례하여 일할 계산(안분)되었습니다.
-            또한, 과세별도기지급액 중 일회성으로 체크된 <b>${excludedCount}건</b>을 제외한 비일회성 항목이 임금총액에 합산되었습니다.
-            최종 산출된 임금총액을 12로 나누어 예상 퇴직급여를 도출합니다.`;
-
-            document.getElementById('resultDescription').innerHTML = desc;
+        function formatNumber(input) {
+            let value = input.value.replace(/[^0-9]/g, '');
+            if(value) {
+                input.value = Number(value).toLocaleString();
+            } else {
+                input.value = '';
+            }
         }
 
-        // 페이지 로드 시 최초 1회 계산 실행
-        window.onload = calculate;
+        function getDaysInMonth(year, month) {
+            return new Date(year, month, 0).getDate();
+        }
+
+        function renderExtraPays() {
+            const container = document.getElementById('extraPayContainer');
+            container.innerHTML = '';
+
+            extraPays.forEach((item, index) => {
+                container.innerHTML += `
+                    <div class="grid grid-cols-12 gap-2 px-4 py-3 items-center hover:bg-gray-100 transition">
+                        <div class="col-span-4">
+                            <input type="text" value="${item.label}" onchange="updateExtra(${index}, 'label', this.value)" class="w-full bg-transparent border-none text-sm text-gray-700 focus:ring-0 p-0" placeholder="항목명">
+                        </div>
+                        <div class="col-span-4">
+                            <input type="text" value="${Number(item.amount).toLocaleString()}" oninput="formatNumber(this); updateExtra(${index}, 'amount', this.value)" class="w-full bg-transparent border-none text-sm font-medium text-blue-600 text-right focus:ring-0 p-0" placeholder="0">
+                        </div>
+                        <div class="col-span-3 text-center flex items-center justify-center">
+                            <input type="checkbox" ${item.excluded ? 'checked' : ''} onchange="updateExtra(${index}, 'excluded', this.checked)" class="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 cursor-pointer">
+                        </div>
+                        <div class="col-span-1 text-center">
+                            <button onclick="removeExtraPay(${index})" class="text-red-400 hover:text-red-600">
+                                <svg class="w-4 h-4 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function addExtraPay() {
+            extraPays.push({ id: Date.now(), label: '', amount: 0, excluded: false });
+            renderExtraPays();
+            calculate();
+        }
+
+        function removeExtraPay(index) {
+            extraPays.splice(index, 1);
+            renderExtraPays();
+            calculate();
+        }
+
+        function updateExtra(index, key, value) {
+            if(key === 'amount') {
+                extraPays[index][key] = Number(value.replace(/[^0-9]/g, '')) || 0;
+            } else {
+                extraPays[index][key] = value;
+            }
+            calculate();
+        }
+
+        function calculate() {
+            document.getElementById('resName').innerText = document.getElementById('empName').value;
+            document.getElementById('resId').innerText = document.getElementById('empId').value;
+
+            const totalBase = parseInt(document.getElementById('totalBase').value.replace(/,/g, '')) || 0;
+            const firstBase = parseInt(document.getElementById('firstBase').value.replace(/,/g, '')) || 0;
+            const lastBase = parseInt(document.getElementById('lastBase').value.replace(/,/g, '')) || 0;
+
+            const middleSum = totalBase - firstBase - lastBase;
+
+            const startDateStr = document.getElementById('startDate').value;
+            const endDateStr = document.getElementById('endDate').value;
+
+            let proratedFirst = 0;
+            let proratedLast = 0;
+            let explanation = '';
+
+            if(startDateStr && endDateStr) {
+                const startD = new Date(startDateStr);
+                const endD = new Date(endDateStr);
+
+                const startTotalDays = getDaysInMonth(startD.getFullYear(), startD.getMonth() + 1);
+                const startWorkedDays = startTotalDays - startD.getDate() + 1;
+                proratedFirst = (firstBase / startTotalDays) * startWorkedDays;
+
+                explanation += `<p>• <b>첫 달 안분:</b> ${startTotalDays}일 중 ${startWorkedDays}일 반영 <br><span class="text-gray-500">(잔여액 ${Math.round(proratedFirst).toLocaleString()}원)</span></p>`;
+
+                const endTotalDays = getDaysInMonth(endD.getFullYear(), endD.getMonth() + 1);
+                const endWorkedDays = endD.getDate();
+                proratedLast = (lastBase / endTotalDays) * endWorkedDays;
+
+                explanation += `<p>• <b>마지막 달 안분:</b> ${endTotalDays}일 중 ${endWorkedDays}일 반영 <br><span class="text-gray-500">(잔여액 ${Math.round(proratedLast).toLocaleString()}원)</span></p>`;
+            }
+
+            let includedExtra = 0;
+            let excludedCount = 0;
+            extraPays.forEach(item => {
+                if(item.excluded) {
+                    excludedCount++;
+                } else {
+                    includedExtra += item.amount;
+                }
+            });
+
+            explanation += `<p>• <b>온전한 11개월 합산:</b> ${middleSum.toLocaleString()}원</p>`;
+            explanation += `<p>• <b>비일회성 수당 합산:</b> ${includedExtra.toLocaleString()}원 <br><span class="text-gray-500">(일회성 체크 제외 건수: ${excludedCount}건)</span></p>`;
+
+            const finalTotalWage = proratedFirst + middleSum + proratedLast + includedExtra;
+            const finalSeverance = finalTotalWage / 12;
+
+            document.getElementById('resTotalWage').innerText = Math.round(finalTotalWage).toLocaleString() + '원';
+            document.getElementById('resSeverance').innerText = Math.round(finalSeverance).toLocaleString() + '원';
+            document.getElementById('resDescription').innerHTML = explanation;
+        }
+
+        renderExtraPays();
+        calculate();
     </script>
 </body>
 </html>
