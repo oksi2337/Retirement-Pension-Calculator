@@ -357,7 +357,7 @@
                             </div>
                             <div class="bg-gray-800 p-5 rounded-xl border border-gray-700">
                                 <h4 class="text-sm font-bold text-gray-300 mb-2">5. 계산 방법 안내</h4>
-                                <p class="text-xs text-gray-400 leading-relaxed break-keep" id="resDescription-${idx}"></p>
+                                <div class="text-xs text-gray-400" id="resDescription-${idx}"></div>
                             </div>
                         </div>
                     </div>
@@ -417,10 +417,23 @@
             });
 
             const prevPaid = p.prevPaid || 0;
-            const deductionNote = prevPaid > 0 ? ' 기 지급된 부담금은 차감함.' : '';
+            const deductionItem = prevPaid > 0
+                ? `<li class="text-yellow-500">· 기 지급된 부담금 차감</li>` : '';
             const explanation = (p.startDate && p.endDate)
-                ? `총 13개월의 데이터 중 온전한 중간 11개월분은 전액 반영되었으며, 첫 달은 ${startTotal}일 중 <b>${startWorked}일</b>, 마지막 달은 ${endTotal}일 중 <b>${endWorked}일</b>에 비례하여 일할 계산(안분)되었습니다. 또한, 과세별도기지급액 중 일회성으로 체크된 <b>${excludedCount}건</b>을 제외한 비일회성 항목이 임금총액에 합산되었습니다. 최종 산출된 임금총액을 12로 나누어 예상 퇴직급여를 도출합니다.${deductionNote}`
-                : `급여지급액 총합계와 과세별도기지급액을 기반으로 임금총액을 산출하였으며, 과세별도기지급액 중 일회성으로 체크된 <b>${excludedCount}건</b>을 제외한 비일회성 항목이 합산되었습니다. 최종 산출된 임금총액을 12로 나누어 예상 퇴직급여를 도출합니다.${deductionNote}`;
+                ? `<ul class="space-y-1.5 break-keep">
+                    <li>· 중간 11개월: 전액 반영</li>
+                    <li>· 첫 달: ${startTotal}일 중 <b class="text-gray-200">${startWorked}일</b> 일할 계산</li>
+                    <li>· 마지막 달: ${endTotal}일 중 <b class="text-gray-200">${endWorked}일</b> 일할 계산</li>
+                    <li>· 과세별도기지급액: 일회성 <b class="text-gray-200">${excludedCount}건</b> 제외 후 합산</li>
+                    <li>· 임금총액 ÷ 12 → 예상 퇴직급여</li>
+                    ${deductionItem}
+                  </ul>`
+                : `<ul class="space-y-1.5 break-keep">
+                    <li>· 급여지급액 총합계 기반 임금총액 산출</li>
+                    <li>· 과세별도기지급액: 일회성 <b class="text-gray-200">${excludedCount}건</b> 제외 후 합산</li>
+                    <li>· 임금총액 ÷ 12 → 예상 퇴직급여</li>
+                    ${deductionItem}
+                  </ul>`;
 
             const finalWage = proratedFirst + middleSum + proratedLast + includedExtra;
             p.totalWage = Math.round(finalWage);
